@@ -52,6 +52,12 @@ namespace JwtDemo.Auth
                                 Console.WriteLine($"{item.Key}: {item.Value}");
                         }
 
+                        Console.WriteLine("PAYLOAD");
+                        foreach (var item in decoded.Claims)
+                        {
+                                Console.WriteLine($"{item.Type}: {item.Value}");
+                        }
+
                         return tokenString;
                 }
         }
