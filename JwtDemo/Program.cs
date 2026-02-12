@@ -1,34 +1,58 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace JwtDemo
 {
-    public class Program
-    {
-        public static void Main(string[] args)
+        public class Program
         {
-            var builder = WebApplication.CreateBuilder(args);
+                public static void Main(string[] args)
+                {
+                        var builder = WebApplication.CreateBuilder(args);
+                        builder.Services.AddControllers();
+                        builder.Services.AddEndpointsApiExplorer();
+                        builder.Services.AddSwaggerGen();
 
-            // Add services to the container.
+                        var jwtSection = builder.Configuration.GetSection("Jwt");
+                        var issuer = jwtSection["Issuer"];
+                        var audience = jwtSection["Audience"];
+                        var key = jwtSection["Key"];
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+                        builder.Services
+                                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                                .AddJwtBearer(opt =>
+                                {
+                                        opt.TokenValidationParameters = new TokenValidationParameters
+                                        {
+                                                ValidateIssuer = true,
+                                                ValidIssuer = issuer,
 
-            var app = builder.Build();
+                                                ValidateAudience = true,
+                                                ValidAudience = audience,
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+                                                ValidateIssuerSigningKey = true,
+                                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!)),
 
-            app.UseHttpsRedirection();
+                                                ValidateLifetime = true,
+                                                ClockSkew = TimeSpan.FromSeconds(30)
+                                        };
+                                });
 
-            app.UseAuthorization();
+                        builder.Services.AddAuthorization();
 
+                        var app = builder.Build();
 
-            app.MapControllers();
+                        app.UseSwagger();
+                        app.UseSwaggerUI();
 
-            app.Run();
+                        app.UseHttpsRedirection();
+
+                        app.UseAuthentication();
+                        app.UseAuthorization();
+
+                        app.MapControllers();
+
+                        app.Run();
+                }
         }
-    }
 }
