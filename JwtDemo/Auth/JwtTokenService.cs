@@ -37,7 +37,7 @@ namespace JwtDemo.Auth
                                 audience: audience,
                                 claims: claims,
                                 notBefore: DateTime.UtcNow,
-                                expires: DateTime.UtcNow.AddMinutes(minutes),
+                                expires: DateTime.UtcNow.AddMinutes(1),
                                 signingCredentials: creds
                          );
 

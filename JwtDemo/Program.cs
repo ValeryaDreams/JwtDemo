@@ -9,6 +9,7 @@ namespace JwtDemo
         {
                 public static void Main(string[] args)
                 {
+                        // Загрузка конфигурации appsettings.json, подготовка DI контейнера.
                         var builder = WebApplication.CreateBuilder(args);
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
@@ -74,6 +75,10 @@ namespace JwtDemo
 
                         // JwtTokenService не хранит состояние, он только читает конфигурацию и генериует строку.
                         builder.Services.AddSingleton<Auth.JwtTokenService>();
+
+                        builder.Services.AddSingleton<Auth.JwtTokenService>();
+                        builder.Services.AddSingleton<Auth.RefreshTokenService>();
+                        builder.Services.AddSingleton<Auth.InMemoryRefreshTokenStore>();
 
                         builder.Services.AddAuthorization();
 
